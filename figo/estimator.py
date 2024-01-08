@@ -28,6 +28,7 @@ class ModelEstimator:
         self._tau += 1
 
     def get_estimate_r(self):
+        # 产生随机性的原因
         return np.random.rand() / np.sqrt(self._tau) + self._phi
 
 

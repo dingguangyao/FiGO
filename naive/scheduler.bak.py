@@ -1,14 +1,14 @@
 import time
 
 from loader.cache_res_loader import CacheResLoader
-from modeling.deepface.model_wrapper import DeepFaceModelWrapper
+from modeling.efficientdet.model_wrapper import EfficientDetModelWrapper
 from profiler.model_time import lookup_model_time
 
 
 class Scheduler:
     def __init__(self, modeling_name, img_loader, pred, use_cache=False):
-        if modeling_name == "deepface":
-            self._model = DeepFaceModelWrapper(1, use_cache)
+        if modeling_name == "efficientdet":
+            self._model = EfficientDetModelWrapper(7, use_cache)
 
             if use_cache:
                 cache_res = CacheResLoader(
@@ -35,25 +35,16 @@ class Scheduler:
         pass
 
     def _execute(self):
-        batchsize = 32
-        img_path = []
         for i in range(len(self._loader)):
-            img_path.append(self._loader.get_img_path(i))
-            if (i+1)%batchsize == 0:
-                res = self._model.predict(img_path)
-                for k in range(batchsize):
-                    self._res[i-batchsize+1+k] = res[k]
-                img_path=[]
-                
-            
+
             # self._log("process img {}".format(i))
 
-            # if not self._use_cache:
-            #     img_path = self._loader.get_img_path(i)
-            #     self._res[i] = self._model.predict(img_path)
-            # else:
-            #     self._exec_record.append(self._model)
-            #     self._res[i] = self._model.cached_predict(i)
+            if not self._use_cache:
+                img_path = self._loader.get_img_path(i)
+                self._res[i] = self._model.predict(img_path)
+            else:
+                self._exec_record.append(self._model)
+                self._res[i] = self._model.cached_predict(i)
 
     def process(self):
         st = time.perf_counter()

@@ -32,3 +32,4 @@ class CountPredicate:
     def __str__(self):
         return "Class: {}, Count: {}".format(self._cls, self._count)
             
+        

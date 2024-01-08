@@ -55,7 +55,7 @@ class Scheduler:
         self._existing_sample_res = [
             dict() for _ in range(len(self._model_ensemble))
         ]
-
+        # 记录所有模型的accuracy
         self._accuracy_list = [[] for _ in range(len(self._model_ensemble))]
 
         self._plan_chunk = []
@@ -129,6 +129,7 @@ class Scheduler:
         if depth == 1:
             used_model = list(range(len(self._model_ensemble)))
         else:
+            # 模型剪枝 每次只选择3个模型
             used_model = self._esti.get_best_n_model(n=2) + [
                 len(self._model_ensemble) - 1
             ]
@@ -139,20 +140,23 @@ class Scheduler:
             start, end, self._existing_sample_idx
         )
 
+        # 记录每一采样帧的最优模型
         sample_best_model_record = []
 
+        # 计算每一个采样帧对应的最优模型
         for s_idx in current_sample_idx:
+            # 默认最优模型是计算最重模型
             best_model = len(self._model_ensemble) - 1
 
             ref_out = None
-
+            # 由模型重->轻遍历模型
             for m_idx in range(len(self._model_ensemble) - 1, -1, -1):
 
                 # actual pruning
                 if m_idx not in used_model:
                     continue
 
-                # if no sampling record, inference
+                # 如果该数据未采样
                 if s_idx not in self._existing_sample_idx[m_idx]:
                     if not self._use_cache:
                         img_path = self._loader.get_img_path(s_idx)
@@ -177,7 +181,7 @@ class Scheduler:
                         ref_out
                     )
                     self._esti.update_r(m_idx, reward)
-
+                # 计算每个模型的 accuracy
                 if self._pred.evaluate(out) == self._pred.evaluate(ref_out):
                     best_model = m_idx
                     self._accuracy_list[m_idx].append(1)

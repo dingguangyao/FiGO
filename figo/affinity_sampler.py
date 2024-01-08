@@ -31,6 +31,7 @@ class AffinitySampler:
         elif 0 < len(inrange_existing_sample_idx) < 1 / self._ratio:
             actual_sample_idx += inrange_existing_sample_idx
 
+            # 选择target_sample_index中与已采样的数据最远的那些数据
             for k in inrange_existing_sample_idx:
                 best_dis, best_idx = -1, -1
 
@@ -48,6 +49,7 @@ class AffinitySampler:
                 if len(actual_sample_idx) == 1 / self._ratio:
                     break
         else:
+            # 尽可能在以采样数据中选择与target_sample_index最近的那些数据
             for idx in target_sample_idx:
                 best_dis, best_idx = 0xFFFFFFFF, -1
 

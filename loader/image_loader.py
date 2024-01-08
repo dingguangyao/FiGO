@@ -8,13 +8,15 @@ class ImageLoader:
         self._use_cache = use_cache
 
         if not use_cache:
-            self._root_dir = os.path.join("./data", dataset)
+            self._root_dir = os.path.join("/home/gyding/data", dataset)
             self._length = len(os.listdir(self._root_dir))
 
-            self._img_path_list = []
+            self._img_path_list = os.listdir(self._root_dir)
 
-            if self._dataset == "ua-detrac":
-                self._img_path_list = os.listdir(self._root_dir)
+            # self._img_path_list = []
+            # if self._dataset == "ua-detrac":
+            #     self._img_path_list = os.listdir(self._root_dir)
+
         else:
             with open(
                 os.path.join("./cache", dataset, "efficientdet-d7.json")
@@ -30,12 +32,13 @@ class ImageLoader:
             raise Exception(
                 "Dataset {} index is out of range".format(self._dataset)
             )
-
-        if self._dataset == "ua-detrac":
-            img_path = os.path.join(self._root_dir, self._img_path_list[idx])
-        else:
-            img_path = "frame" + str(idx) + ".jpg"
-            img_path = os.path.join(self._root_dir, img_path)
+        img_path = os.path.join(self._root_dir, self._img_path_list[idx])
+        
+        # if self._dataset == "ua-detrac":
+        #     img_path = os.path.join(self._root_dir, self._img_path_list[idx])
+        # else:
+        #     img_path = "frame" + str(idx) + ".jpg"
+        #     img_path = os.path.join(self._root_dir, img_path)
 
         return img_path
 
